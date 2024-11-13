@@ -35,7 +35,7 @@ The launcher expects a JSON config file
 
 Sample config file:
 
-```json
+```jsonc
 {
   "task-runners": [
     {
