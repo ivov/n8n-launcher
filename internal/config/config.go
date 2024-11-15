@@ -47,5 +47,9 @@ func ReadConfig() (*LauncherConfig, error) {
 		return nil, fmt.Errorf("failed to parse config file at %s: %w", configPath, err)
 	}
 
+	if len(config.TaskRunners) == 0 {
+		return nil, fmt.Errorf("found no task runner configs inside launcher config")
+	}
+
 	return &config, nil
 }
