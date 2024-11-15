@@ -73,7 +73,6 @@ func (l *LaunchCommand) Execute() error {
 
 	// 4. authenticate with n8n main instance
 
-	log.Printf("Authenticating with n8n main instance...")
 	grantToken, err := auth.FetchGrantToken(n8nUri, token)
 	if err != nil {
 		log.Printf("Failed to fetch grant token from n8n main instance: %v", err)

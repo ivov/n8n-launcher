@@ -8,7 +8,6 @@ CLI utility to securely manage [n8n task runners](https://docs.n8n.io/PENDING).
 2024/11/15 13:53:33 Loaded config file loaded with a single runner config
 2024/11/15 13:53:33 Changed into working directory: /Users/ivov/Development/n8n-launcher/bin
 2024/11/15 13:53:33 Filtered environment variables
-2024/11/15 13:53:33 Authenticating with n8n main instance...
 2024/11/15 13:53:33 Authenticated with n8n main instance
 2024/11/15 13:53:33 Launching runner...
 2024/11/15 13:53:33 Command: /usr/local/bin/node
