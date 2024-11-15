@@ -1,60 +1,48 @@
 # n8n-launcher
 
-CLI utility to securely launch and kill [n8n task runners](https://docs.n8n.io/pending).
-
-Task runners are nodes that execute tasks in n8n workflows, specifically Code node execution tasks.
-
-n8n may use a runner:
-
-- in `internal` mode, where n8n spawns the task runner as a child process (npm users), or
-- in `external` mode, where an orchestrator starts the runner via a secure launcher (Docker).
-
-## Usage
+CLI utility to securely manage [n8n task runners](https://docs.n8n.io/PENDING).
 
 ```sh
-# launch a task runner
 ./n8n-launcher launch -type javascript
-
-# kill a task runner
-./n8n-launcher kill -type javascript -pid <process_id>
+2024/11/15 13:53:33 Starting to execute `launch` command...
+2024/11/15 13:53:33 Loaded config file loaded with a single runner config
+2024/11/15 13:53:33 Changed into working directory: /Users/ivov/Development/n8n-launcher/bin
+2024/11/15 13:53:33 Filtered environment variables
+2024/11/15 13:53:33 Authenticating with n8n main instance...
+2024/11/15 13:53:33 Authenticated with n8n main instance
+2024/11/15 13:53:33 Launching runner...
+2024/11/15 13:53:33 Command: /usr/local/bin/node
+2024/11/15 13:53:33 Args: [/Users/ivov/Development/n8n/packages/@n8n/task-runner/dist/start.js]
+2024/11/15 13:53:33 Env vars: [LANG PATH TERM N8N_RUNNERS_N8N_URI N8N_RUNNERS_GRANT_TOKEN]
 ```
 
 ## Setup
 
-- Download the launcher binary for your target platform from the [releases page](https://github.com/n8n-io/task-runner-launcher/releases)
-- Create a [config file](#config-file) and make it accessible to the launcher binary
-- Install n8n@<pending_version>, which contains the `@n8n/task-runner` package
-- Install Node.js >=20.15
+### Install
 
-### Config file
+- Install Node.js >=18.17 
+- Install n8n >= `<PENDING_VERSION>`
+- Download launcher binary from [releases page](https://github.com/n8n-io/task-runner-launcher/releases)
 
-The launcher expects a JSON config file
+### Config
 
-- at `config.json` in the directory containing the binary, or
+Create a config file for the launcher:
+
+- at `config.json` in the dir containing the launcher binary, or
 - at `/etc/n8n-task-runners.json` if `SECURE_MODE=true`.
 
 Sample config file:
 
-```jsonc
+```json
 {
   "task-runners": [
     {
-      // type of task runner, only "javascript" currently supported
       "runner-type": "javascript",
-
-      // path to directory containing launcher (Go binary)
       "workdir": "/usr/local/bin",
-
-      // command to start runner
       "command": "/usr/local/bin/node",
-
-      // arguments containing path to task runner entrypoint
       "args": [
         "/usr/local/lib/node_modules/n8n/node_modules/@n8n/task-runner/dist/start.js"
       ],
-
-      // env vars allowed to be passed to task runner
-      // allowed by default: LANG, PATH, TZ, TERM
       "allowed-env": [
         "PATH",
         "N8N_RUNNERS_GRANT_TOKEN",
@@ -70,35 +58,67 @@ Sample config file:
 }
 ```
 
+Task runner config fields:
+
+- `runner-type`: Type of task runner, currently only `javascript` supported
+- `workdir`: Path to directory containing the task runner binary
+- `command`: Command to execute to start task runner
+- `args`: Args for command to execute, currently path to task runner entrypoint
+- `allowed-env`: Env vars allowed to be passed to the task runner
+
 ### Auth
 
-The launcher optionally supports authenticating with n8n through a grant token.
+Generate a secret auth token (e.g. random string) for the launcher to authenticate with the n8n main instance. During the `launch` command, the launcher will exchange this auth token for a grant token from the n8n instance, and pass the grant token to the runner.
 
-To enable auth, set `N8N_RUNNERS_AUTH_TOKEN` to the authentication token for n8n, and set `N8N_RUNNERS_N8N_URI` to the URI of the n8n instance. When these set, the launcher will fetch a grant token from the n8n instance, and pass the grant token to the runner through the `N8N_RUNNERS_GRANT_TOKEN` env vars.
+## Usage
+
+Once setup is complete, start the launcher:
+
+```sh
+export N8N_RUNNERS_AUTH_TOKEN=...
+export N8N_RUNNERS_N8N_URI=... 
+./n8n-launcher launch -type javascript
+```
+
+Or in secure mode:
+
+```sh
+export SECURE_MODE=true
+export N8N_RUNNERS_AUTH_TOKEN=...
+export N8N_RUNNERS_N8N_URI=... 
+./n8n-launcher launch -type javascript
+```
 
 ## Development
 
-### Setup
-
 1. Install Go >=1.23
 
-2. Clone repository and create a config file:
+2. Clone repo and create config file:
 
 ```sh
-git clone https://github.com/n8n-io/task-runner-launcher
-cd task-runner-launcher
-
-touch config.json && echo '<your-config>' > config.json 
-mv config.json /etc/n8n-task-runners.json # if secure
+git clone https://github.com/n8n-io/PENDING-NAME
+cd PENDING_NAME
+touch config.json && echo '<json-config-content>' > config.json 
 ```
 
-3. Install n8n and start it with `N8N_RUNNERS_ENABLED=true` and `N8N_RUNNERS_MODE=external`
+3. Start n8n:
 
-4. Build and run launcher:
+```sh
+export N8N_RUNNERS_ENABLED=true
+export N8N_RUNNERS_MODE=external 
+export N8N_RUNNERS_LAUNCHER_PATH=...
+export N8N_RUNNERS_AUTH_TOKEN=...
+pnpm start
+```
+
+4. Make changes to launcher.
+
+5. Build and run launcher:
 
 ```sh
 go build -o bin cmd/launcher/main.go
 
-N8N_RUNNERS_N8N_URI=127.0.0.1:5679 ./bin/main launch -type javascript # or
-N8N_RUNNERS_N8N_URI=127.0.0.1:5679 SECURE_MODE=true ./bin/main launch -type javascript
+export N8N_RUNNERS_N8N_URI=...
+export N8N_RUNNERS_AUTH_TOKEN=...
+./bin/main launch -type javascript
 ```

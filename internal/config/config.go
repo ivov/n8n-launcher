@@ -14,7 +14,7 @@ type TaskRunnerConfig struct {
 	// Path to directory containing launcher (Go binary)
 	WorkDir string `json:"workdir"`
 
-	// Command to execute to start runner
+	// Command to execute to start task runner
 	Command string `json:"command"`
 
 	// Arguments for command to execute, currently path to task runner entrypoint
