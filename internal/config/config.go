@@ -8,7 +8,7 @@ import (
 )
 
 type TaskRunnerConfig struct {
-	// Type of runner, currently only "javascript" supported
+	// Type of task runner, currently only "javascript" supported
 	RunnerType string `json:"runner-type"`
 
 	// Path to directory containing launcher (Go binary)
