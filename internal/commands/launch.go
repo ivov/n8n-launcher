@@ -5,9 +5,9 @@ import (
 	"log"
 	"n8n-launcher/internal/auth"
 	"n8n-launcher/internal/config"
+	"n8n-launcher/internal/env"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 type LaunchCommand struct {
@@ -67,7 +67,7 @@ func (l *LaunchCommand) Execute() error {
 
 	defaultEnvs := []string{"LANG", "PATH", "TZ", "TERM"}
 	allowedEnvs := append(defaultEnvs, runnerConfig.AllowedEnv...)
-	env := filterEnvToAllowedOnly(allowedEnvs)
+	_env := env.AllowedOnly(allowedEnvs)
 
 	log.Printf("Filtered environment variables")
 
@@ -80,7 +80,7 @@ func (l *LaunchCommand) Execute() error {
 		return fmt.Errorf("failed to fetch grant token from n8n main instance: %w", err)
 	}
 
-	env = append(env, fmt.Sprintf("N8N_RUNNERS_GRANT_TOKEN=%s", grantToken))
+	_env = append(_env, fmt.Sprintf("N8N_RUNNERS_GRANT_TOKEN=%s", grantToken))
 
 	log.Printf("Authenticated with n8n main instance")
 
@@ -89,10 +89,10 @@ func (l *LaunchCommand) Execute() error {
 	log.Printf("Launching runner...")
 	log.Printf("Command: %s", runnerConfig.Command)
 	log.Printf("Args: %v", runnerConfig.Args)
-	log.Printf("Env vars: %v", envKeys(env))
+	log.Printf("Env vars: %v", env.Keys(_env))
 
 	cmd := exec.Command(runnerConfig.Command, runnerConfig.Args...)
-	cmd.Env = env
+	cmd.Env = _env
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -106,33 +106,4 @@ func (l *LaunchCommand) Execute() error {
 	log.Printf("Successfully launched task runner")
 
 	return nil
-}
-
-func filterEnvToAllowedOnly(allowed []string) []string {
-	var filtered []string
-
-	for _, env := range os.Environ() {
-		parts := strings.SplitN(env, "=", 2)
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := parts[0]
-		for _, allowedKey := range allowed {
-			if key == allowedKey {
-				filtered = append(filtered, env)
-				break
-			}
-		}
-	}
-
-	return filtered
-}
-
-func envKeys(envVars []string) []string {
-	keys := make([]string, len(envVars))
-	for i, env := range envVars {
-		keys[i] = strings.SplitN(env, "=", 2)[0]
-	}
-	return keys
 }
