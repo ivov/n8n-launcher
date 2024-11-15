@@ -8,8 +8,11 @@ import (
 )
 
 type KillCommand struct {
+	// Type of runner to kill, currently only "javascript" supported
 	RunnerType string
-	PID        int
+
+	// Process ID of runner to kill
+	PID int
 }
 
 func (k *KillCommand) Execute() error {
@@ -27,13 +30,13 @@ func (k *KillCommand) Execute() error {
 	}
 
 	if !found {
-		return fmt.Errorf("unknown runner type: %s", k.RunnerType)
+		return fmt.Errorf("failed to find requested runner type in config: %s", k.RunnerType)
 	}
 
 	process, err := os.FindProcess(k.PID)
 	if err != nil {
-		return fmt.Errorf("failed to find process: %w", err)
+		return fmt.Errorf("failed to find requested process ID: %w", err)
 	}
 
-	return process.Signal(syscall.SIGTERM)
+	return process.Signal(syscall.SIGKILL)
 }

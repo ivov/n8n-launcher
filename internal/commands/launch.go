@@ -15,7 +15,7 @@ type LaunchCommand struct {
 }
 
 func (l *LaunchCommand) Execute() error {
-	log.Println("Starting launch command execution...")
+	log.Println("Starting `launch` command execution...")
 
 	cfg, err := config.ReadConfig()
 	if err != nil {
@@ -23,7 +23,15 @@ func (l *LaunchCommand) Execute() error {
 		return err
 	}
 
-	log.Printf("Config loaded successfully. Found %d runner configurations", len(cfg.TaskRunners))
+	cfgNum := len(cfg.TaskRunners)
+
+	if cfgNum == 0 {
+		return fmt.Errorf("found no task runner configs in launcher config")
+	} else if cfgNum == 1 {
+		log.Print("Config file loaded. Found a single runner config")
+	} else {
+		log.Printf("Config file loaded. Found %d runner configurations", cfgNum)
+	}
 
 	var runnerConfig config.TaskRunnerConfig
 	found := false
@@ -40,35 +48,33 @@ func (l *LaunchCommand) Execute() error {
 		return fmt.Errorf("unknown runner type: %s", l.RunnerType)
 	}
 
-	log.Printf("Found matching runner config. WorkDir: %s", runnerConfig.WorkDir)
-
 	if err := os.Chdir(runnerConfig.WorkDir); err != nil {
-		log.Printf("Failed to change directory to %s: %v", runnerConfig.WorkDir, err)
-		return fmt.Errorf("failed to chdir into configured directory (%s): %w", runnerConfig.WorkDir, err)
+		log.Printf("Failed to change dir to %s: %v", runnerConfig.WorkDir, err)
+		return fmt.Errorf("failed to chdir into configured dir (%s): %w", runnerConfig.WorkDir, err)
 	}
 
-	log.Printf("Changed working directory successfully")
+	log.Printf("Changed working directory")
 
 	defaultEnvs := []string{"LANG", "PATH", "TZ", "TERM"}
 	allowedEnvs := append(defaultEnvs, runnerConfig.AllowedEnv...)
-	env := filterEnv(allowedEnvs)
+	env := filterEnvToAllowedOnly(allowedEnvs)
 
-	log.Printf("Filtered environment variables. Count: %d", len(env))
+	log.Printf("Filtered environment variables")
 
 	if token := os.Getenv("N8N_RUNNERS_AUTH_TOKEN"); token != "" {
-		log.Printf("Found auth token, attempting to fetch grant token")
 		n8nUri := os.Getenv("N8N_RUNNERS_N8N_URI")
 		if n8nUri == "" {
 			return fmt.Errorf("N8N_RUNNERS_N8N_URI is required when N8N_RUNNERS_AUTH_TOKEN is set")
 		}
 
+		log.Printf("Found auth token and n8n URI, attempting to fetch grant token")
 		grantToken, err := auth.FetchGrantToken(n8nUri, token)
 		if err != nil {
 			log.Printf("Failed to fetch grant token: %v", err)
 			return fmt.Errorf("failed to fetch grant token: %w", err)
 		}
 
-		log.Printf("Successfully obtained grant token")
+		log.Printf("Obtained grant token from n8n main instance")
 		env = append(env, fmt.Sprintf("N8N_RUNNERS_GRANT_TOKEN=%s", grantToken))
 	}
 
@@ -80,18 +86,18 @@ func (l *LaunchCommand) Execute() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	log.Printf("Starting process...")
+	log.Printf("Starting task runner...")
 	err = cmd.Run()
 	if err != nil {
-		log.Printf("Process failed to start: %v", err)
+		log.Printf("Task runner failed to start: %v", err)
 		return err
 	}
 
-	log.Printf("Process started successfully")
+	log.Printf("Successfully started task runner")
 	return nil
 }
 
-func filterEnv(allowed []string) []string {
+func filterEnvToAllowedOnly(allowed []string) []string {
 	var filtered []string
 
 	for _, env := range os.Environ() {

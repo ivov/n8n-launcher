@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 
@@ -11,7 +10,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Missing argument. Expected 'launch' or 'kill' subcommand")
+		log.Fatal("Missing argument. Expected `launch` or `kill` subcommand")
 		os.Exit(1)
 	}
 
@@ -47,12 +46,11 @@ func main() {
 		}
 
 	default:
-		fmt.Printf("Unknown command: %s\n", os.Args[1])
-		fmt.Println("Expected 'launch' or 'kill' subcommand")
+		log.Printf("Unknown command: %s\nExpected `launch` or `kill` subcommand", os.Args[1])
 		os.Exit(1)
 	}
 
 	if err := cmd.Execute(); err != nil {
-		log.Fatal(err)
+		log.Printf("Failed to execute command: %s", err)
 	}
 }

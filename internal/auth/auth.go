@@ -1,3 +1,5 @@
+// Package auth provides functions for the launcher to authenticate with the
+// n8n main instance.
 package auth
 
 import (
@@ -13,6 +15,9 @@ type grantTokenResponse struct {
 	} `json:"data"`
 }
 
+// FetchGrantToken exchanges the launcher's its auth token for a less privileged
+// grant token `N8N_RUNNERS_GRANT_TOKEN` returned by the n8n main instance. The
+// launcher will later pass this grant token to the task runner.
 func FetchGrantToken(n8nUri, authToken string) (string, error) {
 	url := fmt.Sprintf("http://%s/runners/auth", n8nUri)
 
@@ -36,7 +41,7 @@ func FetchGrantToken(n8nUri, authToken string) (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to fetch grant token: status code %d", resp.StatusCode)
+		return "", fmt.Errorf("request to fetch grant token received status code %d", resp.StatusCode)
 	}
 
 	var tokenResp grantTokenResponse
