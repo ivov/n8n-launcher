@@ -3,11 +3,11 @@ package commands
 import (
 	"fmt"
 	"log"
+	"n8n-launcher/internal/auth"
+	"n8n-launcher/internal/config"
 	"os"
 	"os/exec"
 	"strings"
-	"task-runner-launcher/internal/auth"
-	"task-runner-launcher/internal/config"
 )
 
 type LaunchCommand struct {

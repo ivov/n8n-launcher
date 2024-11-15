@@ -13,10 +13,10 @@ n8n may use a runner:
 
 ```sh
 # launch a task runner
-./task-runner-launcher launch -type javascript
+./n8n-launcher launch -type javascript
 
 # kill a task runner
-./task-runner-launcher kill -type javascript -pid <process_id>
+./n8n-launcher kill -type javascript -pid <process_id>
 ```
 
 ## Setup
@@ -97,7 +97,7 @@ mv config.json /etc/n8n-task-runners.json # if secure
 4. Build and run launcher:
 
 ```sh
-go build -o bin cmd/task-runner-launcher/main.go
+go build -o bin cmd/launcher/main.go
 
 N8N_RUNNERS_N8N_URI=127.0.0.1:5679 ./bin/main launch -type javascript # or
 N8N_RUNNERS_N8N_URI=127.0.0.1:5679 SECURE_MODE=true ./bin/main launch -type javascript

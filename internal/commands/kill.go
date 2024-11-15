@@ -2,9 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"n8n-launcher/internal/config"
 	"os"
 	"syscall"
-	"task-runner-launcher/internal/config"
 )
 
 type KillCommand struct {

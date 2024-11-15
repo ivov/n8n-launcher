@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"task-runner-launcher/internal/commands"
+	"n8n-launcher/internal/commands"
 )
 
 func main() {
