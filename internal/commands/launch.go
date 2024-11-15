@@ -73,7 +73,7 @@ func (l *LaunchCommand) Execute() error {
 
 	// 4. authenticate with n8n main instance
 
-	log.Printf("Attempting to authenticate with n8n main instance...")
+	log.Printf("Authenticating with n8n main instance...")
 	grantToken, err := auth.FetchGrantToken(n8nUri, token)
 	if err != nil {
 		log.Printf("Failed to fetch grant token from n8n main instance: %v", err)
@@ -96,14 +96,11 @@ func (l *LaunchCommand) Execute() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	log.Printf("Launching task runner...")
 	err = cmd.Run()
 	if err != nil {
 		log.Printf("Failed to launch task runner: %v", err)
 		return err
 	}
-
-	log.Printf("Successfully launched task runner")
 
 	return nil
 }
