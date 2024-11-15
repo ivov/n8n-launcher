@@ -21,7 +21,7 @@ CLI utility to securely manage [n8n task runners](https://docs.n8n.io/PENDING).
 
 - Install Node.js >=18.17 
 - Install n8n >= `<PENDING_VERSION>`
-- Download launcher binary from [releases page](https://github.com/n8n-io/task-runner-launcher/releases)
+- Download launcher binary from [releases page](https://github.com/n8n-io/PENDING/releases)
 
 ### Config
 
