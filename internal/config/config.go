@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+const configPath = "/etc/n8n-task-runners.json"
+
 type TaskRunnerConfig struct {
 	// Type of task runner, currently only "javascript" supported
 	RunnerType string `json:"runner-type"`
@@ -28,15 +30,7 @@ type LauncherConfig struct {
 	TaskRunners []TaskRunnerConfig `json:"task-runners"`
 }
 
-func getConfigPath() string {
-	if os.Getenv("SECURE_MODE") == "true" {
-		return "/etc/n8n-task-runners.json"
-	}
-	return "./config.json"
-}
-
 func ReadConfig() (*LauncherConfig, error) {
-	configPath := getConfigPath()
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open config file at %s: %w", configPath, err)
