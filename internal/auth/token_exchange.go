@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 type grantTokenResponse struct {
@@ -25,7 +25,7 @@ func FetchGrantToken(n8nUri, authToken string) (string, error) {
 		return "", err
 	}
 
-	req, err := http.NewRequest("POST", url, strings.NewReader(string(payloadBytes)))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadBytes))
 	if err != nil {
 		return "", err
 	}
