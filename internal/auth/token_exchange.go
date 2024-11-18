@@ -1,5 +1,3 @@
-// Package auth provides functions for the launcher to authenticate with the
-// n8n main instance.
 package auth
 
 import (
