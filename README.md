@@ -73,7 +73,7 @@ Once setup is complete, start the launcher:
 ```sh
 export N8N_RUNNERS_AUTH_TOKEN=...
 export N8N_RUNNERS_N8N_URI=... 
-./n8n-launcher launch -type javascript
+./n8n-launcher javascript
 ```
 
 ## Development
@@ -108,5 +108,5 @@ go build -o bin cmd/launcher/main.go
 
 export N8N_RUNNERS_N8N_URI=...
 export N8N_RUNNERS_AUTH_TOKEN=...
-./bin/main launch -type javascript
+./bin/main javascript
 ```
