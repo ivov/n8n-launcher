@@ -67,7 +67,7 @@ func (l *LaunchCommand) Execute() error {
 
 	defaultEnvs := []string{"LANG", "PATH", "TZ", "TERM"}
 	allowedEnvs := append(defaultEnvs, runnerConfig.AllowedEnv...)
-	_env := env.AllowedOnly(allowedEnvs)
+	runnerEnv := env.AllowedOnly(allowedEnvs)
 
 	log.Printf("Filtered environment variables")
 
@@ -79,7 +79,7 @@ func (l *LaunchCommand) Execute() error {
 		return fmt.Errorf("failed to fetch grant token from n8n main instance: %w", err)
 	}
 
-	_env = append(_env, fmt.Sprintf("N8N_RUNNERS_GRANT_TOKEN=%s", grantToken))
+	runnerEnv = append(runnerEnv, fmt.Sprintf("N8N_RUNNERS_GRANT_TOKEN=%s", grantToken))
 
 	log.Printf("Authenticated with n8n main instance")
 
@@ -88,10 +88,10 @@ func (l *LaunchCommand) Execute() error {
 	log.Printf("Launching runner...")
 	log.Printf("Command: %s", runnerConfig.Command)
 	log.Printf("Args: %v", runnerConfig.Args)
-	log.Printf("Env vars: %v", env.Keys(_env))
+	log.Printf("Env vars: %v", env.Keys(runnerEnv))
 
 	cmd := exec.Command(runnerConfig.Command, runnerConfig.Args...)
-	cmd.Env = _env
+	cmd.Env = runnerEnv
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
