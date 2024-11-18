@@ -1,6 +1,6 @@
 # n8n-launcher
 
-CLI utility to manage [n8n task runners](https://docs.n8n.io/PENDING).
+CLI utility to launch [n8n task runners](https://docs.n8n.io/PENDING).
 
 ```sh
 ./n8n-launcher launch -type javascript

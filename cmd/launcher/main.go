@@ -29,22 +29,6 @@ func main() {
 
 		cmd = &commands.LaunchCommand{RunnerType: *runnerType}
 
-	case "kill":
-		killCmd := flag.NewFlagSet("kill", flag.ExitOnError)
-		runnerType := killCmd.String("type", "", "Runner type to kill")
-		pid := killCmd.Int("pid", 0, "Process ID to kill")
-		killCmd.Parse(os.Args[2:])
-
-		if *runnerType == "" || *pid == 0 {
-			killCmd.PrintDefaults()
-			os.Exit(1)
-		}
-
-		cmd = &commands.KillCommand{
-			RunnerType: *runnerType,
-			PID:        *pid,
-		}
-
 	default:
 		logs.Logger.Printf("Unknown command: %s\nExpected `launch` or `kill` subcommand", os.Args[1])
 		os.Exit(1)
