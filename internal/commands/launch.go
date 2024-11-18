@@ -2,10 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"n8n-launcher/internal/auth"
 	"n8n-launcher/internal/config"
 	"n8n-launcher/internal/env"
+	"n8n-launcher/internal/logs"
 	"os"
 	"os/exec"
 )
@@ -15,7 +15,7 @@ type LaunchCommand struct {
 }
 
 func (l *LaunchCommand) Execute() error {
-	log.Println("Starting to execute `launch` command...")
+	logs.Logger.Println("Started executing `launch` command")
 
 	token := os.Getenv("N8N_RUNNERS_AUTH_TOKEN")
 	n8nUri := os.Getenv("N8N_RUNNERS_N8N_URI")
@@ -28,7 +28,7 @@ func (l *LaunchCommand) Execute() error {
 
 	cfg, err := config.ReadConfig()
 	if err != nil {
-		log.Printf("Error reading config: %v", err)
+		logs.Logger.Printf("Error reading config: %v", err)
 		return err
 	}
 
@@ -49,9 +49,9 @@ func (l *LaunchCommand) Execute() error {
 	cfgNum := len(cfg.TaskRunners)
 
 	if cfgNum == 1 {
-		log.Print("Loaded config file loaded with a single runner config")
+		logs.Logger.Println("Loaded config file loaded with a single runner config")
 	} else {
-		log.Printf("Loaded config file with %d runner configs", cfgNum)
+		logs.Logger.Printf("Loaded config file with %d runner configs", cfgNum)
 	}
 
 	// 2. change into working directory
@@ -60,7 +60,7 @@ func (l *LaunchCommand) Execute() error {
 		return fmt.Errorf("failed to chdir into configured dir (%s): %w", runnerConfig.WorkDir, err)
 	}
 
-	log.Printf("Changed into working directory: %s", runnerConfig.WorkDir)
+	logs.Logger.Printf("Changed into working directory: %s", runnerConfig.WorkDir)
 
 	// 3. filter environment variables
 
@@ -68,7 +68,7 @@ func (l *LaunchCommand) Execute() error {
 	allowedEnvs := append(defaultEnvs, runnerConfig.AllowedEnv...)
 	runnerEnv := env.AllowedOnly(allowedEnvs)
 
-	log.Printf("Filtered environment variables")
+	logs.Logger.Printf("Filtered environment variables")
 
 	// 4. authenticate with n8n main instance
 
@@ -79,14 +79,14 @@ func (l *LaunchCommand) Execute() error {
 
 	runnerEnv = append(runnerEnv, fmt.Sprintf("N8N_RUNNERS_GRANT_TOKEN=%s", grantToken))
 
-	log.Printf("Authenticated with n8n main instance")
+	logs.Logger.Println("Authenticated with n8n main instance")
 
 	// 5. launch runner
 
-	log.Printf("Launching runner...")
-	log.Printf("Command: %s", runnerConfig.Command)
-	log.Printf("Args: %v", runnerConfig.Args)
-	log.Printf("Env vars: %v", env.Keys(runnerEnv))
+	logs.Logger.Println("Launching runner...")
+	logs.Logger.Printf("Command: %s", runnerConfig.Command)
+	logs.Logger.Printf("Args: %v", runnerConfig.Args)
+	logs.Logger.Printf("Env vars: %v", env.Keys(runnerEnv))
 
 	cmd := exec.Command(runnerConfig.Command, runnerConfig.Args...)
 	cmd.Env = runnerEnv
@@ -95,8 +95,7 @@ func (l *LaunchCommand) Execute() error {
 
 	err = cmd.Run()
 	if err != nil {
-		log.Printf("Failed to launch task runner: %v", err)
-		return err
+		return fmt.Errorf("failed to launch task runner: %w", err)
 	}
 
 	return nil

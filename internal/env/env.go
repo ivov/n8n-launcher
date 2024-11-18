@@ -34,5 +34,6 @@ func Keys(env []string) []string {
 	for i, env := range env {
 		keys[i] = strings.SplitN(env, "=", 2)[0]
 	}
+
 	return keys
 }

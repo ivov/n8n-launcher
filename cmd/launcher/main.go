@@ -2,15 +2,15 @@ package main
 
 import (
 	"flag"
-	"log"
 	"os"
 
 	"n8n-launcher/internal/commands"
+	"n8n-launcher/internal/logs"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		log.Fatal("Missing argument. Expected `launch` or `kill` subcommand")
+		logs.Logger.Fatal("Missing argument. Expected `launch` or `kill` subcommand")
 		os.Exit(1)
 	}
 
@@ -46,11 +46,11 @@ func main() {
 		}
 
 	default:
-		log.Printf("Unknown command: %s\nExpected `launch` or `kill` subcommand", os.Args[1])
+		logs.Logger.Printf("Unknown command: %s\nExpected `launch` or `kill` subcommand", os.Args[1])
 		os.Exit(1)
 	}
 
 	if err := cmd.Execute(); err != nil {
-		log.Printf("Failed to execute command: %s", err)
+		logs.Logger.Printf("Failed to execute command: %s", err)
 	}
 }
