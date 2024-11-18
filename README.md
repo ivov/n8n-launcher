@@ -1,6 +1,6 @@
 # n8n-launcher
 
-CLI utility to securely manage [n8n task runners](https://docs.n8n.io/PENDING).
+CLI utility to manage [n8n task runners](https://docs.n8n.io/PENDING).
 
 ```sh
 ./n8n-launcher launch -type javascript
@@ -20,15 +20,12 @@ CLI utility to securely manage [n8n task runners](https://docs.n8n.io/PENDING).
 ### Install
 
 - Install Node.js >=18.17 
-- Install n8n >= `<PENDING_VERSION>`
+- Install n8n >= PENDING_VERSION
 - Download launcher binary from [releases page](https://github.com/n8n-io/PENDING/releases)
 
 ### Config
 
-Create a config file for the launcher:
-
-- at `config.json` in the dir containing the launcher binary, or
-- at `/etc/n8n-task-runners.json` if `SECURE_MODE=true`.
+Create a config file for the launcher at `/etc/n8n-task-runners.json`.
 
 Sample config file:
 
@@ -67,7 +64,7 @@ Task runner config fields:
 
 ### Auth
 
-Generate a secret auth token (e.g. random string) for the launcher to authenticate with the n8n main instance. During the `launch` command, the launcher will exchange this auth token for a grant token from the n8n instance, and pass the grant token to the runner.
+Generate a secret auth token (e.g. random string) for the launcher to authenticate with the n8n main instance. You will need to pass that token as `N8N_RUNNERS_AUTH_TOKEN` to the n8n main instance and to the launcher. During the `launch` command, the launcher will exchange this auth token for a short-lived grant token from the n8n instance, and pass the grant token to the runner.
 
 ## Usage
 
@@ -79,28 +76,22 @@ export N8N_RUNNERS_N8N_URI=...
 ./n8n-launcher launch -type javascript
 ```
 
-Or in secure mode:
-
-```sh
-export SECURE_MODE=true
-export N8N_RUNNERS_AUTH_TOKEN=...
-export N8N_RUNNERS_N8N_URI=... 
-./n8n-launcher launch -type javascript
-```
-
 ## Development
 
 1. Install Go >=1.23
 
-2. Clone repo and create config file:
+2. Clone repo and create a [config file](#config)
 
 ```sh
 git clone https://github.com/n8n-io/PENDING-NAME
 cd PENDING_NAME
-touch config.json && echo '<json-config-content>' > config.json 
+touch config.json && echo '<json-config-content>' > config.json
+sudo mv config.json /etc/n8n-task-runners.json
 ```
 
-3. Start n8n:
+3. Make changes to launcher.
+
+4. Start n8n:
 
 ```sh
 export N8N_RUNNERS_ENABLED=true
@@ -109,8 +100,6 @@ export N8N_RUNNERS_LAUNCHER_PATH=...
 export N8N_RUNNERS_AUTH_TOKEN=...
 pnpm start
 ```
-
-4. Make changes to launcher.
 
 5. Build and run launcher:
 
