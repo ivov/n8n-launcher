@@ -57,7 +57,6 @@ func (l *LaunchCommand) Execute() error {
 	// 2. change into working directory
 
 	if err := os.Chdir(runnerConfig.WorkDir); err != nil {
-		log.Printf("Failed to change dir to %s: %v", runnerConfig.WorkDir, err)
 		return fmt.Errorf("failed to chdir into configured dir (%s): %w", runnerConfig.WorkDir, err)
 	}
 
@@ -75,7 +74,6 @@ func (l *LaunchCommand) Execute() error {
 
 	grantToken, err := auth.FetchGrantToken(n8nUri, token)
 	if err != nil {
-		log.Printf("Failed to fetch grant token from n8n main instance: %v", err)
 		return fmt.Errorf("failed to fetch grant token from n8n main instance: %w", err)
 	}
 
